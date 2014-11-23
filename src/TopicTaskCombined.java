@@ -40,10 +40,22 @@ public class TopicTaskCombined // most of this code is from GetMatrixForCF class
 		// now we have performed topic modeling & we have with us the lda model, the user details and the tasks
 		// now we just need to construct the Tensor
 		tensorClass = new TensorBuilding(numTopics, numTasks, numUsers, users2, taskList);
+		System.out.println("Starting with populating tensor...");
 		tensorClass.populateTensor();
-		saveTensor();
+		System.out.println("Done with populating tensor...");
+		tensorClass.printTensorToFile();
+		//saveTensor();
+		//loadTensor();
 		System.exit(0);
 		calculatePrintUserTaskMatrix();
+	}
+	
+	public static void loadTensor() throws IOException, ClassNotFoundException
+	{
+		FileInputStream fis = new FileInputStream("src/data/DS/Tensor");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        tensorClass.tensor = (double[][][]) ois.readObject();
+        ois.close();
 	}
 	
 	public static void saveTensor() throws IOException

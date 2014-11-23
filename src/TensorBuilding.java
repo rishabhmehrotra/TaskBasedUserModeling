@@ -17,9 +17,29 @@ public class TensorBuilding implements Serializable  {
 		this.taskList = taskList;
 		tensor  = new double[10000][10][1600];
 	}
+	
+	public void printTensorToFile() throws IOException
+	{
+		FileWriter fstream = new FileWriter("src/data/toUse/filledTensorForTensorDecomposition");
+		BufferedWriter out = new BufferedWriter(fstream);
+		for(int i =00;i<numUsers;i++)
+		{
+			for(int j=0;j<numTopics;j++)
+			{
+				for(int k=0;k<numTasks;k++)
+				{
+					out.write(""+this.tensor[i][j][k]);
+					out.write("\n");
+				}
+			}
+		}
+		out.close();
+		System.out.println("Done with writing tensor to file!!");
+	}
 
 	public void populateTensor() {
 		Iterator<User> itr = users2.values().iterator();
+		System.out.println("total no of users: "+users2.size()+" topics: "+numTopics+" tasks: "+numTasks);
 		int c=0;
 		while(itr.hasNext())
 		{
@@ -33,6 +53,7 @@ public class TensorBuilding implements Serializable  {
 				}
 			}
 			c++;
+			if(c%100 == 0) System.out.println("Done for "+c+" users");
 		}
 	}
 	
