@@ -36,17 +36,23 @@ public class UserClusterAnalysis {
 		}
 		else
 		{
-			cluster("src/data/toUse/cluster-LDA.txt");
-			cluster("src/data/toUse/cluster-Task.txt");
-			cluster("src/data/toUse/cluster-TT.txt");
+			int nC = 10;
+			for(int i=1;i<=10;i++)
+			{
+				cluster("src/data/toUse/cluster-LDA.txt", nC);
+				cluster("src/data/toUse/cluster-Task.txt", nC);
+				cluster("src/data/toUse/cluster-TT.txt", nC);
+				nC += 10;
+			}
 		}
 	}
 
 
 
 	@SuppressWarnings("unused")
-	public static void cluster(String filename)
+	public static void cluster(String filename, int nClusters)
 	{
+		System.out.println("\n\n\n------------------------------"+filename);
 		/*
 		InputReader inputReader = new InputReader();
         //this.testset =inputReader.readFromfile("C:\\Users\\Markus\\Documents\\Masterarbeit\\Workspace\\Clusterer\\src\\90.valid");
