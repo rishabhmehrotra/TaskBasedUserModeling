@@ -15,6 +15,7 @@ public class UserClusterAnalysis {
 	/* Cluster Analysis: In this class we run the experiments to compare the user representations based on the cluster analysis of the representations learnt
 	 * the intuition being that good representations will result in better user clusters
 	 * we measure the cluster performance based on internal cluster validation techniques
+	 * Code for Cluster Analysis from: https://code.google.com/p/cluster-algorithms-java-alpha/
 	 */
 
 	public static HashMap<String, ArrayList<Double>> uBoW;
