@@ -37,6 +37,7 @@ public class TopicTaskCombined // most of this code is from GetMatrixForCF class
 		numTasks = taskList.size();
 		
 		performLDAInference();
+		System.exit(0);
 		// now we have performed topic modeling & we have with us the lda model, the user details and the tasks
 		// now we just need to construct the Tensor
 		tensorClass = new TensorBuilding(numTopics, numTasks, numUsers, users2, taskList);
@@ -66,11 +67,13 @@ public class TopicTaskCombined // most of this code is from GetMatrixForCF class
 		fos.close();
 	}
 	
-	public static void performLDAInference()
+	public static void performLDAInference() throws IOException
 	{
+		// Additionally, we also save the topical representations of users: user profiles based on LDA Topic Models
+		FileWriter fstream = new FileWriter("src/data/toUse/userRep_LDA.txt");
+		BufferedWriter out = new BufferedWriter(fstream);
+		
 		InstanceList testing = new InstanceList(lda.instances.getPipe());
-		
-		
 		Iterator<User> itr = users2.values().iterator();
 		while(itr.hasNext())
 		{
@@ -93,13 +96,17 @@ public class TopicTaskCombined // most of this code is from GetMatrixForCF class
 			User u = itr.next();
 			double[] testProb = inferencer.getSampledDistribution(testing.get(c), numTopics, 1, 5);
 			c++;
+			//out.write(u.userID+"\n");
 			for(int j=0;j<numTopics;j++)
 			{
 				System.out.print(testProb[j]+" ");
+				out.write(testProb[j]+"\t");
 				u.LDAtopicDistribution[j] = testProb[j];
 			}
+			out.write("\n");
 			System.out.println();
 		}
+		out.close();
 	}
 	
 	

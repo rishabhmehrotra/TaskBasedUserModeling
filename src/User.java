@@ -45,21 +45,44 @@ public class User implements Serializable {
 		this.userID = userID;
 		this.featureString = featureString;
 		this.features = new HashMap<Integer,Double>();
-		populateFeaturesMap();
+		populateFeaturesMapPMF();
 	}
 	
-	public void populateUserFeatures(String featureString)
+	public void populateUserFeaturesPMF(String featureString)
 	{
 		this.candidateQueries = new HashMap<String, Double>();
 		//this.selfQueries = new HashMap<String, String>();
 		this.bow = new HashMap<String, Float>();
 		this.featureString = featureString;
 		this.features = new HashMap<Integer,Double>();
-		populateFeaturesMap();
+		populateFeaturesMapPMF();
+	}
+	
+	public void populateUserFeaturesPTF(String featureString)
+	{
+		this.candidateQueries = new HashMap<String, Double>();
+		//this.selfQueries = new HashMap<String, String>();
+		this.bow = new HashMap<String, Float>();
+		this.featureString = featureString;
+		this.features = new HashMap<Integer,Double>();
+		populateFeaturesMapPTF();
 	}
 
-	private void populateFeaturesMap() {
+	private void populateFeaturesMapPMF() {
 		String parts[] = this.featureString.split("\t");
+		//start loop from 1 as 0 is the userID
+		System.out.print(this.userID+"__");
+		for(int i=1;i<parts.length;i++)
+		{
+			Double d = Double.parseDouble(parts[i]);
+			this.features.put(new Integer(i), d);
+			System.out.print(d+"__");
+		}
+		System.out.println();
+	}
+	
+	private void populateFeaturesMapPTF() {
+		String parts[] = this.featureString.split(" ");
 		//start loop from 1 as 0 is the userID
 		System.out.print(this.userID+"__");
 		for(int i=1;i<parts.length;i++)

@@ -10,9 +10,9 @@ public class CollaborativeQueryRecommendation implements Serializable{
 	public static ArrayList<User> usersArrayList;
 	public static float[][] simU;
 	public static HashMap<String, Double> perUserCutOff;
-	public static int similarUsersThreshold = 10;
-	public static int candidateQueriesCutoff = 40;
-	public static int baselineOrNot = 2; // 1 for Task Based, 2 for BoW,
+	public static int similarUsersThreshold = 40;
+	public static int candidateQueriesCutoff = 20;
+	public static int baselineOrNot = 1; // 1 for Task Based, 2 for BoW,
 	
 	public static ArrayList<Task> taskList;
 
@@ -24,7 +24,8 @@ public class CollaborativeQueryRecommendation implements Serializable{
 			users2 = new HashMap<String, User>();
 			populateTaskList();
 			
-			loadUserData();
+			loadUserData_PMF();
+			//loadUserData_PTF();
 			
 			//populateUserFeatures();
 			System.out.println("No of users: "+users2.size());
@@ -75,7 +76,7 @@ public class CollaborativeQueryRecommendation implements Serializable{
 		else if(part == 3)
 		{*/
 			evaluateMatchingQueries();
-			System.out.println("End of Part 3");
+			System.out.println("End of Part 3"+"baselineornot: "+baselineOrNot + " no U:"+ similarUsersThreshold + "  candidateQCutoff: "+candidateQueriesCutoff);
 		}
 	}
 	
@@ -130,7 +131,32 @@ public class CollaborativeQueryRecommendation implements Serializable{
 		System.out.println("Done with populatePerUserSelfTrainTest");
 	}
 	
-	public static void loadUserData() throws IOException, ClassNotFoundException
+	public static void loadUserData_PTF() throws IOException, ClassNotFoundException
+	{
+		FileInputStream fis = new FileInputStream("src/data/DS/usersAbove500Q");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        users2 = (HashMap<String, User>) ois.readObject();
+        ois.close();
+        BufferedReader br1 = new BufferedReader(new FileReader("src/data/toUse/gen2.txt"));
+		String line1 = br1.readLine();
+		BufferedReader br2 = new BufferedReader(new FileReader("src/data/toUse/userOrder"));
+		String line2 = br2.readLine();
+		
+		while(line1!=null && line2!=null)
+		{
+			String userID = line2.trim();
+			String line = userID+"\t"+line1;
+			//User u = new User(userID, line);
+			User u = users2.get(userID);
+			u.populateUserFeaturesPTF(line);
+			users2.put(userID, u);
+			line1=br1.readLine();
+			line2=br2.readLine();
+		}
+		System.out.println("No of users: "+users2.size());
+	}
+	
+	public static void loadUserData_PMF() throws IOException, ClassNotFoundException
 	{
 		FileInputStream fis = new FileInputStream("src/data/DS/usersAbove500Q");
         ObjectInputStream ois = new ObjectInputStream(fis);
@@ -147,7 +173,7 @@ public class CollaborativeQueryRecommendation implements Serializable{
 			String line = userID+"\t"+line1;
 			//User u = new User(userID, line);
 			User u = users2.get(userID);
-			u.populateUserFeatures(line);
+			u.populateUserFeaturesPMF(line);
 			users2.put(userID, u);
 			line1=br1.readLine();
 			line2=br2.readLine();
@@ -259,9 +285,10 @@ public class CollaborativeQueryRecommendation implements Serializable{
         		}
         	});
         	System.out.println("User: "+u.userID+"  ");
-        	int match = 0;
+        	int match = 0, max = u.candidateQList.size();
         	for(int i=0;i<candidateQueriesCutoff;i++)
         	{
+        		if(i == max) break;
         		Query q = u.candidateQList.get(i);
         		System.out.print(q.query+"_"+q.score+"_______");
         		//if(baselineOrNot == 1) {if(u.selfQueries.containsKey(q.query)) match++;}
