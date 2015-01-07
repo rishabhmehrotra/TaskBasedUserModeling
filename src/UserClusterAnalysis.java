@@ -40,9 +40,9 @@ public class UserClusterAnalysis {
 			int nC = 10;
 			for(int i=1;i<=10;i++)
 			{
-				cluster("src/data/toUse/cluster-LDA.txt", nC);
-				cluster("src/data/toUse/cluster-Task.txt", nC);
-				cluster("src/data/toUse/cluster-TT.txt", nC);
+				cluster("src/data/toUse/cluster-LDA", nC);
+				cluster("src/data/toUse/cluster-Task", nC);
+				cluster("src/data/toUse/cluster-TT", nC);
 				nC += 10;
 			}
 		}
@@ -54,6 +54,25 @@ public class UserClusterAnalysis {
 	public static void cluster(String filename, int nClusters)
 	{
 		System.out.println("\n\n\n------------------------------"+filename);
+
+		String inputFileName,outputFileName;
+		int numOfClusters;
+
+		inputFileName = filename+".txt";
+		outputFileName = filename+"_OUTPUT.txt";
+		numOfClusters = nClusters;
+
+		Dataset dataset = InputReader.readFromfile(inputFileName);
+
+		KMeans kmeans = new KMeans(new EuclideanDistance(),numOfClusters);
+		kmeans.doClustering(dataset);
+		InputReader.writeDatasetToFile(outputFileName , dataset);
+		Map<String,String> params = new HashMap<String,String>();
+		params.put(ValidationWriter.KMEANS_K_LABEL,String.valueOf(numOfClusters));
+		ValidationWriter.printValidationIndices("KMEANS", params, dataset);
+		ValidationWriter.writeToCSV("kmeansResults.csv", Algorithms.KMeans, dataset, params);
+		ValidationWriter.writeValidationIndice(outputFileName, "KMeans", params, dataset);
+		
 		/*
 		InputReader inputReader = new InputReader();
         //this.testset =inputReader.readFromfile("C:\\Users\\Markus\\Documents\\Masterarbeit\\Workspace\\Clusterer\\src\\90.valid");
@@ -86,23 +105,6 @@ public class UserClusterAnalysis {
         }
         System.out.println("The best value for epsilon is " + Collections.min(indexvalues));
 		 */
-		String inputFileName,outputFileName;
-		int numOfClusters;
-
-		inputFileName = filename;
-		outputFileName = "src/data/toUse/cluster-Task_OUTPUT.txt";
-		numOfClusters = 10;
-
-		Dataset dataset = InputReader.readFromfile(inputFileName);
-
-		KMeans kmeans = new KMeans(new EuclideanDistance(),numOfClusters);
-		kmeans.doClustering(dataset);
-		InputReader.writeDatasetToFile(outputFileName , dataset);
-		Map<String,String> params = new HashMap<String,String>();
-		params.put(ValidationWriter.KMEANS_K_LABEL,String.valueOf(numOfClusters));
-		ValidationWriter.printValidationIndices("KMEANS", params, dataset);
-		ValidationWriter.writeToCSV("kmeansResults.csv", Algorithms.KMeans, dataset, params);
-		ValidationWriter.writeValidationIndice(outputFileName, "KMeans", params, dataset);
 	}
 
 	public static void loadUserRepresentations() throws IOException
