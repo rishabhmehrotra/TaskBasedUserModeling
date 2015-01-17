@@ -22,17 +22,24 @@ public class UserClusterAnalysis {
 	public static HashMap<String, ArrayList<Double>> uLDA;//userRep_LDA
 	public static HashMap<String, ArrayList<Double>> uTask;//users.txt
 	public static HashMap<String, ArrayList<Double>> uTT;//gen2.txt
+	
+	public static HashMap<String, String> users1159Map;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		uBoW = new HashMap<String, ArrayList<Double>>();
 		uLDA = new HashMap<String, ArrayList<Double>>();
 		uTask = new HashMap<String, ArrayList<Double>>();
 		uTT = new HashMap<String, ArrayList<Double>>();
+		users1159Map = new HashMap<String,String>();
 
 		int initialSetupRequired = 2;
 		if(initialSetupRequired == 1)
 		{
 			loadUserRepresentations();
+			// as of 17th Jan, it was clustering all 8900 users but we need clusters for just 1159 users unfortunately coz the Collaborative query recommendation bit is just for 1159 users between 550-600 queries
+			// so we need to populate a hashmap of those 1159 users and do clustering only for them
+			populate1159UsersHashmap();
+			//System.exit(0);
 			populateFilesForClustering();
 		}
 		else
@@ -44,11 +51,25 @@ public class UserClusterAnalysis {
 				cluster("src/data/toUse/cluster-Task", nC);
 				cluster("src/data/toUse/cluster-TT", nC);
 				nC += 10;
+				break;
 			}
 		}
 	}
-
-
+	
+	public static void populate1159UsersHashmap() throws IOException, ClassNotFoundException
+	{
+		FileInputStream fis = new FileInputStream("src/data/DS/userArrayList");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        ArrayList<User> usersArrayList = (ArrayList<User>) ois.readObject();
+        ois.close();
+        Iterator<User> itr = usersArrayList.iterator();
+        while(itr.hasNext())
+        {
+        	User u = itr.next();
+        	if(!users1159Map.containsKey(u.userID)) users1159Map.put(u.userID, u.userID);
+        }
+        System.out.println("users1159mao size: "+users1159Map.size());
+	}
 
 	@SuppressWarnings("unused")
 	public static void cluster(String filename, int nClusters)
@@ -183,6 +204,7 @@ public class UserClusterAnalysis {
 		while(itr.hasNext())
 		{
 			String userID = itr.next();
+			if(!users1159Map.containsKey(userID)) continue;
 			ArrayList<Double> al2 = uLDA.get(userID);
 			ArrayList<Double> al3 = uTask.get(userID);
 			ArrayList<Double> al4 = uTT.get(userID);
