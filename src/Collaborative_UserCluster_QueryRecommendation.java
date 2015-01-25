@@ -10,9 +10,9 @@ public class Collaborative_UserCluster_QueryRecommendation implements Serializab
 	public static ArrayList<User> usersArrayList;
 	public static float[][] simU;
 	public static HashMap<String, Double> perUserCutOff;
-	public static int similarUsersThreshold = 20;
+	public static int similarUsersThreshold = 40;
 	public static int candidateQueriesCutoff = 40;
-	public static int baselineOrNot = 2; // 1 for Task Based, 2 for BoW,
+	public static int baselineOrNot = 1; // 1 for Task Based, 2 for BoW,
 	
 	public static HashMap<String, Integer> user2ClusterMap;
 	public static HashMap<Integer, ArrayList<User>> clusterUserCollectionMap;
@@ -27,10 +27,10 @@ public class Collaborative_UserCluster_QueryRecommendation implements Serializab
 			users2 = new HashMap<String, User>();
 			populateTaskList();
 			
-			//loadUserData_PMF();
+			loadUserData_PMF();
 			
 			
-			loadUserData_PTF();
+			//loadUserData_PTF();
 			
 			//populateUserFeatures();
 			System.out.println("No of users: "+users2.size());
